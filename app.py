@@ -3,18 +3,14 @@ import pandas as pd
 import numpy as np
 import joblib
 
-# -----------------------------
-# Load Model
-# -----------------------------
+
 @st.cache_resource
 def load_model():
     return joblib.load("output/diabetes_model.pkl")
 
 model = load_model()
 
-# -----------------------------
-# Streamlit UI
-# -----------------------------
+
 st.set_page_config(page_title="Diabetes Risk Prediction", layout="centered")
 
 st.title("🩺 Diabetes Risk Prediction")
@@ -22,7 +18,7 @@ st.write("Enter the patient data below and get an instant risk prediction.")
 
 st.divider()
 
-# Input fields
+
 num_preg = st.number_input("Number of Pregnancies", 0, 20, 1)
 glucose = st.slider("Glucose Concentration", 0, 250, 120)
 bp = st.slider("Diastolic Blood Pressure", 0, 140, 70)
@@ -33,7 +29,7 @@ diab_pred = st.slider("Diabetes Pedigree Function", 0.0, 3.0, 0.5)
 age = st.slider("Age", 10, 90, 33)
 skin = st.slider("Skin (Custom Feature)", 0.0, 3.0, 1.0)
 
-# Convert to dataframe
+
 input_data = pd.DataFrame([{
     "num_preg": num_preg,
     "glucose_conc": glucose,
