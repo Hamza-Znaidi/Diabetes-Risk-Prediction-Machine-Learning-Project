@@ -1,7 +1,4 @@
-"""
-Diabetes Risk Prediction - Auto-Target Version
-This version automatically detects the correct target column.
-"""
+
 
 import os
 import argparse
@@ -31,24 +28,22 @@ warnings.filterwarnings("ignore", category=UserWarning)
 plt.rcParams["figure.figsize"] = (8, 6)
 
 
-# -----------------------------
-# NEW: Auto-detect target column
-# -----------------------------
+
 def detect_target_column(df, user_target=None):
-    # If user manually provided a target column
+    
     if user_target is not None:
         if user_target in df.columns:
             return user_target
         else:
             raise ValueError(f"Target column '{user_target}' not found in dataset.")
 
-    # Common names in diabetes datasets
+    
     common_names = ["diabetes", "Outcome", "outcome", "target"]
     for c in common_names:
         if c in df.columns:
             return c
 
-    # Fallback: try to find a binary column
+    
     binary_cols = [c for c in df.columns if df[c].nunique() == 2]
     if len(binary_cols) == 1:
         return binary_cols[0]
@@ -63,16 +58,14 @@ def detect_target_column(df, user_target=None):
 def load_data(path: str, target_col=None):
     df = pd.read_csv(path)
 
-    # Auto detect target
+    
     detected = detect_target_column(df, target_col)
     print(f"Detected target column: {detected}")
 
     return df, detected
 
 
-# -----------------------------
-# Main pipeline elements
-# -----------------------------
+
 def basic_cleaning(df):
     zero_as_nan = ["glucose_conc", "diastolic_bp", "thickness", "insulin", "bmi"]
     for col in zero_as_nan:
@@ -98,7 +91,7 @@ def build_preprocessor(df):
 def train_models(X_train, y_train, preprocessor, seed=42):
     models = {}
 
-    # Logistic Regression
+   
     log_pipe = Pipeline([
         ("pre", preprocessor),
         ("clf", LogisticRegression(max_iter=1000, random_state=seed))
@@ -112,7 +105,7 @@ def train_models(X_train, y_train, preprocessor, seed=42):
     log_search.fit(X_train, y_train)
     models["logistic"] = log_search
 
-    # Random Forest
+    
     rf_pipe = Pipeline([
         ("pre", preprocessor),
         ("clf", RandomForestClassifier(random_state=seed))
@@ -145,7 +138,7 @@ def evaluate(y_test, y_pred, y_proba, outdir):
     print("\n=== Evaluation Metrics ===")
     print(metrics)
 
-    # Confusion matrix
+    
     cm = confusion_matrix(y_test, y_pred)
 
     disp = ConfusionMatrixDisplay(
@@ -159,7 +152,7 @@ def evaluate(y_test, y_pred, y_proba, outdir):
     plt.savefig(outdir / "confusion_matrix.png")
     plt.close()
 
-    # ROC curve
+    
     fpr, tpr, _ = roc_curve(y_test, y_proba)
     roc_auc = auc(fpr, tpr)
 
@@ -204,7 +197,7 @@ def main(args):
     print("Training models…")
     models = train_models(X_train, y_train, preprocessor)
 
-    # Select best model by recall
+    
     best_name, best_model = max(models.items(), key=lambda x: x[1].best_score_)
     print(f"Best model: {best_name} | Recall={best_model.best_score_:.4f}")
 
@@ -215,7 +208,7 @@ def main(args):
 
     evaluate(y_test, y_pred, y_proba, outdir)
 
-    # Save
+    
     joblib.dump(final_model, outdir / "diabetes_model.pkl")
     print(f"Model saved to: {outdir/'diabetes_model.pkl'}")
 
