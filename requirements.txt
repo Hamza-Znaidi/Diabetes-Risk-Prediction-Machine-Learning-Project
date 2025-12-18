@@ -3,6 +3,6 @@ pandas>=1.3
 scikit-learn>=1.0
 matplotlib>=3.3
 joblib>=1.0
-# Optional (recommended):
-xgboost>=1.6.0   # install if you want XGBoost support
-shap>=0.41.0     # for model explanations
+
+xgboost>=1.6.0  
+shap>=0.41.0     
